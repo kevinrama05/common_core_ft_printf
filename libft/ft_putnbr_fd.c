@@ -1,50 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_utils2.c                                 :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kerama <kerama@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/26 10:23:28 by kerama            #+#    #+#             */
-/*   Updated: 2025/11/04 09:35:11 by kerama           ###   ########.fr       */
+/*   Created: 2025/10/15 11:53:05 by kerama            #+#    #+#             */
+/*   Updated: 2025/10/17 10:24:25 by kerama           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdarg.h>
 #include <unistd.h>
-#include "ft_printf.h"
+#include "libft.h"
 
-void	ft_putnum(int *count, int n)
+void	ft_putnbr_fd(int n, int fd)
 {
 	char	c;
 
 	if (n == -2147483648)
 	{
-		ft_putstr(count, "-2147483648");
+		write(fd, "-2147483648", 11);
 		return ;
 	}
 	if (n < 0)
 	{
+		write(fd, "-", 1);
 		n = -n;
-		ft_putchar(count, '-');
 	}
 	if (n >= 10)
-		ft_putnum(count, n / 10);
-	c = '0' + (n % 10);
-	ft_putchar(count, c);
-}
-
-void	ft_putu(int *count, unsigned int n)
-{
-	char	c;
-
-	if (n == 0)
-	{
-		ft_putchar(count, '0');
-		return ;
-	}
-	if (n >= 10)
-		ft_putu(count, n / 10);
-	c = '0' + (n % 10);
-	ft_putchar(count, c);
+		ft_putnbr_fd(n / 10, fd);
+	c = (n % 10) + '0';
+	write(fd, &c, 1);
 }

@@ -1,58 +1,64 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kerama <kerama@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/26 10:23:44 by kerama            #+#    #+#             */
+/*   Updated: 2025/11/03 13:01:07 by kerama           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ft_printf.h"
 #include <stdarg.h>
 
-typedef enum e_type
+void	handle_format(const char *ptr, int *i, int *total, va_list args)
 {
-    TYPE_CHAR,
-    TYPE_STRING,
-    TYPE_INT,
-    TYPE_UINT,
-    TYPE_HEX,
-    TYPE_PTR,
-} t_type;
+	if (ptr[*i + 1] == '%')
+		ft_putchar(total, '%');
+	else if (ptr[*i + 1] == 'c')
+		ft_putchar(total, va_arg(args, int));
+	else if (ptr[*i + 1] == 's')
+		ft_putstr(total, va_arg(args, char *));
+	else if (ptr[*i + 1] == 'p')
+		ft_putptr(va_arg(args, void *), total);
+	else if (ptr[*i + 1] == 'd' || ptr[*i + 1] == 'i')
+		ft_putnum(total, va_arg(args, int));
+	else if (ptr[*i + 1] == 'u')
+		ft_putu(total, va_arg(args, unsigned int));
+	else if (ptr[*i + 1] == 'x')
+		print_hex(total, va_arg(args, unsigned int));
+	else if (ptr[*i + 1] == 'X')
+		print_bigx(total, va_arg(args, unsigned int));
+	else
+	{
+		ft_putchar(total, ptr[*i]);
+		ft_putchar(total, ptr[*i + 1]);
+	}
+	(*i) += 2;
+}
 
-typedef union u_data
+int	ft_printf(const char *ptr, ...)
 {
-    char c;
-    char *s;
-    int i;
-    unsigned int u;
-    void *p;
-} t_data;
+	va_list	args;
+	int		total;
+	int		i;
 
-typedef struct s_value
-{
-    t_type type;
-    t_data data;
-} t_value;
-
-int ft_printf(const char *format, ...)
-{
-    va_list args;
-    int i;
-    int printed;
-
-    va_start(args, format);
-    printed = 0;
-    i = 0;
-    while(format[i])
-    {
-        if (format[i] == '%' && format[i + 1])
-        {
-            t_value v = va_arg(args, t_value);
-            if (format[i + 1] == 'c' && v.type == TYPE_CHAR)
-                ft_putchar(&printed, v.data.c);
-            else if ((format[i + 1] == 'i' || format[i + 1] == 'd') && v.type)
-                ft_putnum(&printed, v.data.i);
-            else if (format[i + i] == 's' && v.type == TYPE_STRING)
-                ft_putstr(&printed, v.data.s);
-            else if (format[i + 1] == 'p' && v.type == TYPE_PTR)
-                ft_putptr(&printed, v.data.p);
-            else if (format[i + 1] == 'u' && v.type == TYPE_UINT)
-                ft_putu(&printed, v.data.u);
-            else if (format[i + 1] == 'x' && v.type == TYPE_HEX)
-                ft_print_hex(&printed, v.data.u);
-            else if (format[i + 1] == 'X' && v.type == TYPE_HEX)
-                ft_printX(&)
-        }
-    }
+	va_start(args, ptr);
+	total = 0;
+	i = 0;
+	while (ptr[i])
+	{
+		if (ptr[i] == '%')
+		{
+			if (!ptr[i + 1])
+				break ;
+			handle_format(ptr, &i, &total, args);
+		}
+		else
+			ft_putchar(&total, ptr[i++]);
+	}
+	va_end(args);
+	return (total);
 }
